@@ -9,6 +9,8 @@ import com.codesquad.kiosk.dto.OrderRequestDto;
 import com.codesquad.kiosk.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.LocalDate;
@@ -54,6 +56,21 @@ public class OrderService {
         LocalDate date = now.toLocalDate();
         String formattedDate = date.format(formatter);
         return formattedDate;
+    }
+
+    private int calculateOption(OrderRequestDto dto) {
+        List<Integer> options = new ArrayList<>();
+        int result = 0;
+        for(int i = 0; i<dto.getOrderList().size(); i ++) {
+            options = orderRepository.getOptionPrices(dto.getOrderList().get(i).getMenuId());
+            for(int j = 0; j<options.size(); j++) {
+                // 2,2   [1,3]
+                if(options.get(j)>1 && dto.getOrderList().get(j).getOption()[j]>j+1) {
+                    result+=500;
+                }
+            }
+        }
+        return result;
     }
   
     public ReceiptDto getReceiptByOrderId(Integer orderId) {

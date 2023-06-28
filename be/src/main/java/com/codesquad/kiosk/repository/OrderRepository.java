@@ -81,5 +81,17 @@ public class OrderRepository {
                         rs.getInt("quantity"))
         ));
     }
+
+    public List<Integer> getOptionPrices (int menuId) {
+        String sql = "SELECT COUNT(*) AS COUNT " +
+                     "FROM MENU_OPTION mo " +
+                     "INNER JOIN OPTIONS o ON o.ID = mo.OPTION_ID " +
+                     "WHERE mo.MENU_ID = :menu_Id " +
+                     "GROUP BY OPTION_CATEGORY_ID";
+
+        SqlParameterSource namedParameters = new MapSqlParameterSource("menu_Id", menuId);
+        List<Integer> optionCounts = namedParameterJdbcTemplate.queryForList(sql, namedParameters, Integer.class);
+        return optionCounts;
+    }
   
 }
